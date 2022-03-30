@@ -1,7 +1,13 @@
 import os, sys, pygame
 
+#color constants
+WHITE = (255,255,255)
+GREY = (170, 170, 170)
+
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 data_dir = os.path.join(main_dir, "data")
+
+
 
 def init_board():
     one_row = [1,2,3, 4,5,6, -1,8,9]
@@ -37,7 +43,7 @@ def load_image(name, colorkey=None, scale=1):
 class Tile(pygame.sprite.Sprite):
     """all the tiles"""
 
-    def __init__(self, value=-1, boardx=0, boardy=0):
+    def __init__(self, value=-1, boardx=0, boardy=0, isModifiable=True):
         pygame.sprite.Sprite.__init__(self) # calls parent Sprite initializer
         self.value = value
         self.image_name = "empty.png"
@@ -46,6 +52,13 @@ class Tile(pygame.sprite.Sprite):
         self.image, self.rect = load_image(self.image_name, -1)
         self.boardx = boardx 
         self.boardy = boardy
+        self.isModifiable = isModifiable
+
+        self.background_color = "grey"
+        if self.isModifiable:
+            self.background_color = "white"
+
+        self.background_image, self.background_rect = load_image(self.background_color + ".png", None)
 
     def __str__(self):
         return "VALUE=%s, IMAGENAME=%s, bx=%s, by=%s" % (self.value, self.image_name, self.boardx, self.boardy) 
@@ -53,14 +66,20 @@ class Tile(pygame.sprite.Sprite):
     def draw(self, screen):
         screenx = 3 + self.boardx*65 + int(self.boardx / 3) * 2
         screeny = 3 + self.boardy*65 + int(self.boardy / 3) * 2
+
+        #draw background 
+        screen.blit(self.background_image, (screenx, screeny))
+
+        #draw number
         screen.blit(self.image, (screenx, screeny))
 
     def modify(self, new_value):
-        self.value = new_value
-        self.image_name = "empty.png"
-        if self.value != -1:
-            self.image_name = "blue" + str(self.value) + ".png"
-        self.image, self.rect = load_image(self.image_name, -1)
+        if self.isModifiable:
+            self.value = new_value
+            self.image_name = "empty.png"
+            if self.value != -1:
+                self.image_name = "blue" + str(self.value) + ".png"
+            self.image, self.rect = load_image(self.image_name, -1)
 
 class Cursor(pygame.sprite.Sprite):
     """the red box cursor"""
