@@ -41,8 +41,8 @@ class Tile(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self) # calls parent Sprite initializer
         self.value = value
         self.image_name = "empty.png"
-        if value != -1:
-            self.image_name = "blue" + str(value) + ".png"
+        if self.value != -1:
+            self.image_name = "blue" + str(self.value) + ".png"
         self.image, self.rect = load_image(self.image_name, -1)
         self.boardx = boardx 
         self.boardy = boardy
@@ -55,18 +55,43 @@ class Tile(pygame.sprite.Sprite):
     def draw(self, screen):
         screen.blit(self.image, (self.screenx, self.screeny))
 
+    def modify(self, new_value):
+        self.value = new_value
+        self.image_name = "empty.png"
+        if self.value != -1:
+            self.image_name = "blue" + str(self.value) + ".png"
+        self.image, self.rect = load_image(self.image_name, -1)
+
+class Cursor(pygame.sprite.Sprite):
+    """the red box cursor"""
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self) #call parent constructor
+        self.board_pos = [0,0]
+        self.image, self.rect = load_image("cursor.png", (0,255,0))
+
+    def draw(self, screen):
+        screen.blit(self.image, (self.board_pos[0] * 64, self.board_pos[1] * 64))
+        
+    def move(self, x_movement, y_movement):
+        self.board_pos[0] += x_movement
+        if self.board_pos[0] < 0: self.board_pos[0] = 0
+        if self.board_pos[0] > 8: self.board_pos[0] = 8
+
+        self.board_pos[1] += y_movement
+        if self.board_pos[1] < 0: self.board_pos[1] = 0
+        if self.board_pos[1] > 8: self.board_pos[1] = 8
 
 class Board(pygame.sprite.Sprite):
     """contains all tiles"""
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.sudoku_board = self._init_board() # a 2d array board full of Tile objects
+        self.cursor = Cursor()
 
     def _init_board(self):
         assembling_board = []
 
         temp_board = init_board()
-        row_counter = 0
         for j, row in enumerate(temp_board):
             assembling_row = []
             for i, value in enumerate(row):
@@ -86,6 +111,14 @@ class Board(pygame.sprite.Sprite):
         for row in self.sudoku_board:
             for tile in row:
                 tile.draw(screen)
+
+        self.cursor.draw(screen)
+
+    def modify_tile(self, new_value):
+        self.sudoku_board[self.cursor.board_pos[1]][self.cursor.board_pos[0]].modify(new_value)
+
+    def move_cursor(self, x_movement, y_movement):
+        self.cursor.move(x_movement, y_movement)
 
 def main():
 
@@ -134,6 +167,37 @@ def main():
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE: 
                 gamelooprunning=False
 
+            #this is cursed but idk how to be smart
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_0:
+                board.modify_tile(-1)
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_1:
+                board.modify_tile(1)
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_2:
+                board.modify_tile(2)
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_3:
+                board.modify_tile(3)
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_4:
+                board.modify_tile(4)
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_5:
+                board.modify_tile(5)
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_6:
+                board.modify_tile(6)
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_7:
+                board.modify_tile(7)
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_8:
+                board.modify_tile(8)
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_9:
+                board.modify_tile(9)
+
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
+                board.move_cursor(0, 1)
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
+                board.move_cursor(0, -1)
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
+                board.move_cursor(1, 0)
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
+                board.move_cursor(-1, 0)
+
         #########
         # draw
         #########
@@ -152,7 +216,7 @@ def main():
         #allsprites.draw(screen)
         pygame.display.flip()
 
-        board.print_board()
+        #board.print_board()
 
     pygame.quit()
 
