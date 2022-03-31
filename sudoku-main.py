@@ -174,72 +174,91 @@ def main():
         text = font.render("Sudoku Gaming :)", True, (10,10,10))
         textpos = text.get_rect(centerx=background.get_width() / 2, y=10)
 
+    gamemode = 3
     clock = pygame.time.Clock()
 
     gamelooprunning = True
     while gamelooprunning:
         clock.tick(60)
+
+        #########
+        # GAMEMODES
+        # 0 = Title Screen
+        # 1 = Menus
+        # 2 = Sudoku Setup
+        # 3 = Sudoku Game
+        # 4 = Sudoku Pause?
+        #########
+        
+        # TITLE SCREEN
+        if gamemode == 0:
+            pass
+            # display title screen until player presses enter
+
+
+        # SUDOKU GAME
+        if gamemode == 3:
         #########
         # inputs and event handling
         #########
-        for event in pygame.event.get():
-            #print(event)
-            #if event.type == pygame.KeyDown: 
-            if event.type == pygame.QUIT: 
-                gamelooprunning=False
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE: 
-                gamelooprunning=False
+            for event in pygame.event.get():
+                #print(event)
+                #if event.type == pygame.KeyDown: 
+                if event.type == pygame.QUIT: 
+                    gamelooprunning=False
+                elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE: 
+                    gamelooprunning=False
 
-            #this is cursed but idk how to be smart
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_0:
-                board.modify_tile(-1)
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_1:
-                board.modify_tile(1)
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_2:
-                board.modify_tile(2)
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_3:
-                board.modify_tile(3)
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_4:
-                board.modify_tile(4)
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_5:
-                board.modify_tile(5)
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_6:
-                board.modify_tile(6)
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_7:
-                board.modify_tile(7)
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_8:
-                board.modify_tile(8)
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_9:
-                board.modify_tile(9)
+                #this is cursed but idk how to be smart
+                elif event.type == pygame.KEYDOWN and (event.key == pygame.K_0 or event.key == pygame.K_KP0):
+                    board.modify_tile(-1)
+                elif event.type == pygame.KEYDOWN and (event.key == pygame.K_1 or event.key == pygame.K_KP1):
+                    board.modify_tile(1)
+                elif event.type == pygame.KEYDOWN and (event.key == pygame.K_2 or event.key == pygame.K_KP2):
+                    board.modify_tile(2)
+                elif event.type == pygame.KEYDOWN and (event.key == pygame.K_3 or event.key == pygame.K_KP3):
+                    board.modify_tile(3)
+                elif event.type == pygame.KEYDOWN and (event.key == pygame.K_4 or event.key == pygame.K_KP4):
+                    board.modify_tile(4)
+                elif event.type == pygame.KEYDOWN and (event.key == pygame.K_5 or event.key == pygame.K_KP5):
+                    board.modify_tile(5)
+                elif event.type == pygame.KEYDOWN and (event.key == pygame.K_6 or event.key == pygame.K_KP6):
+                    board.modify_tile(6)
+                elif event.type == pygame.KEYDOWN and (event.key == pygame.K_7 or event.key == pygame.K_KP7):
+                    board.modify_tile(7)
+                elif event.type == pygame.KEYDOWN and (event.key == pygame.K_8 or event.key == pygame.K_KP8):
+                    board.modify_tile(8)
+                elif event.type == pygame.KEYDOWN and (event.key == pygame.K_9 or event.key == pygame.K_KP9):
+                    board.modify_tile(9)
 
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
-                board.move_cursor(0, 1)
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
-                board.move_cursor(0, -1)
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
-                board.move_cursor(1, 0)
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
-                board.move_cursor(-1, 0)
+                elif event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
+                    board.move_cursor(0, 1)
+                elif event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
+                    board.move_cursor(0, -1)
+                elif event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
+                    board.move_cursor(1, 0)
+                elif event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
+                    board.move_cursor(-1, 0)
 
-        #########
-        # draw
-        #########
-        background = pygame.Surface(screen.get_size())
-        background = background.convert()
-        background.fill(black)
-        #screen.fill(black)
+            #########
+            # draw
+            #########
+            background = pygame.Surface(screen.get_size())
+            background = background.convert()
+            background.fill(black)
+            #screen.fill(black)
 
-        background.blit(text, textpos)
+            background.blit(text, textpos)
 
-        #allsprites.update()
+            #allsprites.update()
 
-        screen.blit(background, (0,0))
+            screen.blit(background, (0,0))
 
-        board.draw(screen)
-        #allsprites.draw(screen)
-        pygame.display.flip()
+            board.draw(screen)
+            #allsprites.draw(screen)
+            pygame.display.flip()
 
-        #board.print_board()
+            #board.print_board()
 
     pygame.quit()
 
