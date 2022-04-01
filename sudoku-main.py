@@ -75,7 +75,12 @@ class Tile(pygame.sprite.Sprite):
 
     def modify(self, new_value):
         if self.isModifiable:
+            if self.value == new_value: #allow toggling by pressing the same number
+                new_value = -1
+
             self.value = new_value
+
+            #load image
             self.image_name = "empty.png"
             if self.value != -1:
                 self.image_name = "blue" + str(self.value) + ".png"
