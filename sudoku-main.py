@@ -174,7 +174,7 @@ def main():
         text = font.render("Sudoku Gaming :)", True, (10,10,10))
         textpos = text.get_rect(centerx=background.get_width() / 2, y=10)
 
-    gamemode = 3
+    gamemode = 0
     clock = pygame.time.Clock()
 
     gamelooprunning = True
@@ -183,21 +183,60 @@ def main():
 
         #########
         # GAMEMODES
-        # 0 = Title Screen
-        # 1 = Menus
-        # 2 = Sudoku Setup
-        # 3 = Sudoku Game
-        # 4 = Sudoku Pause?
+        # 0 = Initialize Title Screen
+        # 1 = Title Screen
+        # 2 = Menus
+        # 3 = Initialize Sudoku
+        # 4 = Sudoku Game
+        # 5 = Sudoku Pause?
         #########
         
-        # TITLE SCREEN
+        # INITIALIZE TITLE SCREEN
         if gamemode == 0:
+            # Load Title Screen
             pass
-            # display title screen until player presses enter
+
+            #goto title screen
+            gamemode = 1
+            
+        # TITLE SCREEN
+        if gamemode == 1:
+            # make font 
+            if pygame.font:
+                font = pygame.font.Font(None, 64)
+                text = font.render("Sudoku Gaming :)", True, (WHITE))
+                textpos = text.get_rect(centerx=background.get_width() / 2, y=10)
+
+            # handle input; ENTER goes to the main menu
+            for event in pygame.event.get():
+                #print(event)
+                #if event.type == pygame.KeyDown: 
+                if event.type == pygame.QUIT: 
+                    gamelooprunning=False
+                elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE: 
+                    gamelooprunning=False
+
+                # ENTER moves to the main menu
+                elif event.type == pygame.KEYDOWN and (event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER):
+                    gamemode = 4 # goes directly to sudoku for now
+
+            # DRAW
+            background = pygame.Surface(screen.get_size())
+            background = background.convert()
+            background.fill(black)
+
+            screen.blit(background, (0,0))
+
+            screen.blit(text, (100,100))
+
+            pygame.display.flip()
+
+
+
 
 
         # SUDOKU GAME
-        if gamemode == 3:
+        if gamemode == 4:
         #########
         # inputs and event handling
         #########
@@ -246,16 +285,10 @@ def main():
             background = pygame.Surface(screen.get_size())
             background = background.convert()
             background.fill(black)
-            #screen.fill(black)
-
-            background.blit(text, textpos)
-
-            #allsprites.update()
 
             screen.blit(background, (0,0))
 
             board.draw(screen)
-            #allsprites.draw(screen)
             pygame.display.flip()
 
             #board.print_board()
