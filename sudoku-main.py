@@ -10,7 +10,8 @@ data_dir = os.path.join(main_dir, "data")
 
 
 def init_board():
-    one_row = [1,2,3, 4,5,6, -1,8,9]
+    one_row = [-1,-1,-1, -1,-1,-1, -1,-1,-1]
+    #one_row = [1,2,3, 4,5,6, -1,8,9]
     sudoku_board = []
     for _ in range(0,9):
         sudoku_board.append(one_row)
@@ -43,7 +44,7 @@ def load_image(name, colorkey=None, scale=1):
 class Tile(pygame.sprite.Sprite):
     """all the tiles"""
 
-    def __init__(self, value=-1, boardx=0, boardy=0, isModifiable=True):
+    def __init__(self, value=-1, boardx=0, boardy=0, is_modifiable=True):
         pygame.sprite.Sprite.__init__(self) # calls parent Sprite initializer
         self.value = value
         self.image_name = "empty.png"
@@ -52,10 +53,11 @@ class Tile(pygame.sprite.Sprite):
         self.image, self.rect = load_image(self.image_name, -1)
         self.boardx = boardx 
         self.boardy = boardy
-        self.isModifiable = isModifiable
+        self.is_modifiable = is_modifiable
+        self.is_valid = True
 
         self.background_color = "grey"
-        if self.isModifiable:
+        if self.is_modifiable:
             self.background_color = "white"
 
         self.background_image, self.background_rect = load_image(self.background_color + ".png", None)
@@ -74,17 +76,30 @@ class Tile(pygame.sprite.Sprite):
         screen.blit(self.image, (screenx, screeny))
 
     def modify(self, new_value):
-        if self.isModifiable:
+        if self.is_modifiable:
             if self.value == new_value: #allow toggling by pressing the same number
                 new_value = -1
 
             self.value = new_value
+
+            #reset validity
+            self.is_valid = True
 
             #load image
             self.image_name = "empty.png"
             if self.value != -1:
                 self.image_name = "blue" + str(self.value) + ".png"
             self.image, self.rect = load_image(self.image_name, -1)
+
+    def set_validity(self, new_value):
+        '''
+        if not self.is_modifiable:
+            self.is_valid = True
+        else:
+        '''
+        #more functionality will be added here i think
+        self.is_valid = new_value
+
 
 class Cursor(pygame.sprite.Sprite):
     """the red box cursor"""
@@ -147,6 +162,55 @@ class Board(pygame.sprite.Sprite):
 
     def move_cursor(self, x_movement, y_movement):
         self.cursor.move(x_movement, y_movement)
+
+    def evaluate(self):
+        is_valid_board = True
+        #check if rows are okay
+        for row in self.sudoku_board:
+            dupe_check_list = []
+            for tile in row:
+                #check if the tile.value is in the dupe_check_list
+                for item in dupe_check_list:
+                    if tile.value > 0 and tile.value == item:
+                        # we have a problem
+                        tile.set_validity(False)
+                        is_valid_board = False
+
+                #add it to the list
+                dupe_check_list.append(tile.value)
+
+        #check if columns are okay
+        for col_iter in range(0,9):
+            dupe_check_list = []
+            for row in self.sudoku_board:
+                tile = row[col_iter]
+                for item in dupe_check_list:
+                    if tile.value > 0 and tile.value == item:
+                        # we have a problem
+                        tile.set_validity(False)
+                        is_valid_board = False
+
+                dupe_check_list.append(tile.value)
+
+        #check if boxes are okay
+        for box_row_iter in range(0,3):
+            for box_col_iter in range(0,3):
+                dupe_check_list = []
+                rows = self.sudoku_board[box_row_iter*3 : box_row_iter*3 + 3]
+                for row in rows:
+                    for col_iter in range(0,3):
+                        tile = row[box_col_iter*3 + col_iter]
+                        for item in dupe_check_list:
+                            if tile.value > 0 and tile.value == item:
+                                # we have a problem
+                                tile.set_validity(False)
+                                is_valid_board = False
+                        dupe_check_list.append(tile.value)
+
+
+
+        return is_valid_board
+
 
 def main():
 
@@ -283,6 +347,10 @@ def main():
                     board.move_cursor(1, 0)
                 elif event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
                     board.move_cursor(-1, 0)
+
+                # press enter to evaluate the board
+                elif event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+                    print(board.evaluate())
 
             #########
             # draw
